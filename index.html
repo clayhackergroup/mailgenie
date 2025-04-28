@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MailGenie AI Chat</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            color: #333;
+        }
+        
+        h1 {
+            color: #4e8cff;
+            margin-bottom: 20px;
+            font-size: 36px;
+            text-align: center;
+        }
+        
+        #chatbox {
+            width: 80%;
+            height: 400px;
+            margin-bottom: 20px;
+            overflow-y: auto;
+            border: 2px solid #ddd;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            animation: fadeIn 1s ease-out;
+        }
+        
+        .message {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            max-width: 70%;
+            line-height: 1.5;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .user {
+            background-color: #4e8cff;
+            color: white;
+            align-self: flex-end;
+            border-top-left-radius: 0;
+        }
+        
+        .ai {
+            background-color: #f1f1f1;
+            color: #333;
+            align-self: flex-start;
+            border-top-right-radius: 0;
+        }
+
+        input[type="text"] {
+            width: 75%;
+            padding: 10px;
+            border-radius: 20px;
+            border: 2px solid #ddd;
+            font-size: 16px;
+            outline: none;
+            margin-right: 10px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #4e8cff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #367cc3;
+        }
+
+        #sendBtn:active {
+            transform: scale(0.98);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <h1>MailGenie AI Chat</h1>
+    <div id="chatbox"></div>
+    <div style="display: flex; width: 80%; align-items: center;">
+        <input type="text" id="userInput" placeholder="Ask me something..." />
+        <button id="sendBtn">Send</button>
+    </div>
+
+    <script>
+        // Update backend URL to match your live backend
+        const backendUrl = "https://mailgenie-jvxz.onrender.com"; 
+
+        document.getElementById('sendBtn').onclick = async function() {
+            const userInput = document.getElementById('userInput').value;
+            if (!userInput) return;
+
+            // Add user message
+            const userMessage = `<div class="message user">${userInput}</div>`;
+            document.getElementById('chatbox').innerHTML += userMessage;
+
+            // Scroll to bottom
+            document.getElementById('chatbox').scrollTop = document.getElementById('chatbox').scrollHeight;
+
+            // Clear input field
+            document.getElementById('userInput').value = "";
+
+            // Send to backend (OpenAI response)
+            const response = await fetch(`${backendUrl}/chat/`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt: userInput })
+            });
+
+            const data = await response.json();
+
+            // Add AI message
+            const aiMessage = `<div class="message ai">${data.reply}</div>`;
+            document.getElementById('chatbox').innerHTML += aiMessage;
+
+            // Scroll to bottom again
+            document.getElementById('chatbox').scrollTop = document.getElementById('chatbox').scrollHeight;
+        };
+    </script>
+</body>
+</html>
